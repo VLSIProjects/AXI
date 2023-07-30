@@ -28,14 +28,33 @@ module Master_AXI_Stream #(parameter n = 4)
    assign TDEST = 1;
    assign TUSER = 1;
    
+// handshaking
+  logic handshake ;
+  
+  assign handshake = tready && tvalid ;
+  
+  // input data
+  logic [1:0] count ;
+    always_ff@( posedge aclk or negedge aresetn )
+			if(!aresetn)
+			     count <= 0;
+			else if(count == 2)
+			     count <= count ;
+			else count <= count + 1;
+			
+			 
 
+  
 // output data 
 	always_ff@( posedge aclk or negedge aresetn )
 		begin
 			if(!aresetn)
 				tdata <= 0;
-			else if(send)
+			else if (count == 1)
+			     tdata <= data ;
+			else if(handshake)
 				tdata <= data ;
+				
 				
 		end
  
